@@ -52,7 +52,6 @@ X_train, X_test, y_train, y_test = train_test_split(
     random_state=42
 )
 
-# =========================
 # RANDOM FOREST MODEL
 
 rf_model = RandomForestClassifier(
@@ -73,7 +72,6 @@ accuracy = accuracy_score(y_test, y_pred)
 print("\nAccuracy:", round(accuracy * 100, 2), "%")
 
 # CLASSIFICATION REPORT
-
 
 print("\nClassification Report:")
 print(classification_report(y_test, y_pred))
@@ -122,10 +120,50 @@ importance = importance.sort_values(
 print("\nFeature Importance:")
 print(importance)
 
-# MODEL SAVING
-
 import joblib
-
 joblib.dump(rf_model, "credit_scoring_model.pkl")
-
 print("\nModel saved successfully!")
+
+# Load trained model
+model = joblib.load("credit_scoring_model.pkl")
+
+print("\n===== Credit Risk Prediction =====")
+
+# User Inputs
+duration = int(input("Loan Duration (months): "))
+loan_amt = float(input("Loan Amount: "))
+age = int(input("Age: "))
+
+# For categorical features, using default values
+sample = pd.DataFrame({
+    'checking_acc_status': [0],
+    'duration': [duration],
+    'cred_hist': [1],
+    'purpose': [0],
+    'loan_amt': [loan_amt],
+    'saving_acc_bonds': [1],
+    'present_employment_since': [2],
+    'installment_rate': [2],
+    'personal_stat_gender': [1],
+    'other_debtors_guarantors': [0],
+    'present_residence_since': [2],
+    'property': [1],
+    'age': [age],
+    'other_installment_plans': [0],
+    'housing': [1],
+    'num_curr_loans': [1],
+    'job': [2],
+    'num_people_provide_maint': [1],
+    'telephone': [0],
+    'is_foreign_worker': [1],
+    'loan_per_month': [loan_amt / duration]
+})
+
+prediction = model.predict(sample)
+
+if prediction[0] == 1:
+    print("\n✅ Creditworthiness: GOOD CREDIT RISK")
+    print("The applicant is likely to be creditworthy.")
+else:
+    print("\n❌ Creditworthiness: BAD CREDIT RISK")
+    print("The applicant may be a higher credit risk.")
